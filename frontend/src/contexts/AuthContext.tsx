@@ -37,10 +37,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthStatus = async () => {
     try {
+      // Mock authentication for development without backend
+      console.log('Using mock authentication (no backend available)')
+      
+      // Create a mock user for development
+      const mockUser: User = {
+        id: 1,
+        name: 'Dev User',
+        email: 'dev@example.com',
+        isVerified: true
+      }
+      
+      setUser(mockUser)
+      
+      /* Original backend auth check - uncomment when backend is ready
       const response = await authApi.me()
       if (response.success && response.data) {
         setUser(response.data as User)
       }
+      */
     } catch (error) {
       console.error('Auth check failed:', error)
     } finally {
@@ -51,6 +66,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
+      // Mock login for development
+      console.log('Mock login attempt:', email)
+      
+      const mockUser: User = {
+        id: 1,
+        name: 'Dev User',
+        email: email,
+        isVerified: true
+      }
+      
+      setUser(mockUser)
+      toast.success('Login successful!')
+      navigate('/')
+      
+      /* Original backend login - uncomment when backend is ready
       const response = await authApi.login(email, password)
       console.log(response.data)
 
@@ -59,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.success('Login successful!')
         navigate('/')
       }
+      */
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed'
       toast.error(message)

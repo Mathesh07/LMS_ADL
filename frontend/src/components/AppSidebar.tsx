@@ -18,7 +18,8 @@ import {
   MoreVertical,
   User,
   Settings,
-  LogOut
+  LogOut,
+  Globe
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -49,6 +50,7 @@ const mainItems = [
   { title: "AI Roadmap Generator", url: "/roadmap-generator", icon: Bot },
   { title: "My Learning Paths", url: "/my-roadmaps", icon: Map },
   { title: "Study Groups", url: "/groups", icon: Users },
+  { title: "Metaspace", url: "/metaspace", icon: Globe },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ]
 

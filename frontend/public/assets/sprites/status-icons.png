@@ -1,0 +1,6 @@
+# Placeholder for status icons sprite sheet
+# This would be a 1x3 sprite sheet with:
+# Frame 0: Green dot (online status)
+# Frame 1: Yellow dot (away status)
+# Frame 2: Red dot (busy status)
+# Each frame: 16x16 pixels

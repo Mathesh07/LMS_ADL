@@ -20,6 +20,7 @@ import Groups from './pages/Groups'
 import StudyGroup from './pages/StudyGroup'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import Metaspace from './pages/Metaspace'
 import LearningPathOverview from "@/pages/LearningPathOverview"
 import LearningPathContent from "@/pages/LearningPathContent"
 import LearningPathNotes from "@/pages/LearningPathNotes"
@@ -70,6 +71,7 @@ const App = () => (
                         <Route path="/group/:groupname" element={<StudyGroup />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/settings" element={<Settings />} />
+                        <Route path="/metaspace" element={<Metaspace />} />
                         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
