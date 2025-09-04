@@ -1,203 +1,73 @@
-# Learning Management System (LMS) Frontend
+# Welcome to your Lovable project
 
-A modern, responsive frontend application for a Learning Management System built with React, featuring comprehensive authentication and a beautiful user interface.
+## Project info
 
-## 🚀 Features
+**URL**: https://lovable.dev/projects/686ecb5e-c197-41bf-99ae-9f8b3c9e7095
 
-### Authentication System
-- **User Registration** with email verification via OTP
-- **User Login** with email/password
-- **Google OAuth** integration (mock implementation)
-- **Password Reset** with OTP verification
-- **OTP Verification** for email verification and password reset
-- **Protected Routes** - Dashboard only accessible to authenticated users
+## How can I edit this code?
 
-### User Interface
-- **Modern Design** with gradient backgrounds and smooth animations
-- **Responsive Layout** that works on all device sizes
-- **Beautiful Forms** with validation and error handling
-- **Loading States** with spinners and progress indicators
-- **Success/Error Messages** for user feedback
+There are several ways of editing your application.
 
-### Mock Data & Services
-- **Mock User Database** with sample users
-- **Mock Authentication Service** for development and testing
-- **OTP Generation & Verification** simulation
-- **Google OAuth Mock** for testing
+**Use Lovable**
 
-## 🏗️ Project Structure
+Simply visit the [Lovable Project](https://lovable.dev/projects/686ecb5e-c197-41bf-99ae-9f8b3c9e7095) and start prompting.
 
-```
-src/
-├── components/          # Reusable UI components
-│   └── ProtectedRoute.jsx
-├── contexts/           # React contexts for state management
-│   └── AuthContext.jsx
-├── hooks/              # Custom React hooks
-│   └── useFormValidation.js
-├── pages/              # Page components
-│   ├── Login.jsx
-│   ├── Signup.jsx
-│   ├── ForgotPassword.jsx
-│   └── Dashboard.jsx
-├── services/           # API and service functions
-│   └── mockData.js
-├── styles/             # CSS styles
-│   └── index.css
-├── utils/              # Utility functions
-│   └── helpers.js
-├── App.jsx             # Main application component
-└── main.jsx           # Application entry point
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-## 🛠️ Technologies Used
+**Edit a file directly in GitHub**
 
-- **React 19** - Modern React with hooks
-- **React Router DOM** - Client-side routing
-- **CSS3** - Custom styling with modern features
-- **Vite** - Fast build tool and development server
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-## 🚀 Getting Started
+**Use GitHub Codespaces**
 
-### Prerequisites
-- Node.js (version 16 or higher)
-- npm or yarn package manager
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-### Installation
+## What technologies are used for this project?
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd frontend
-   ```
+This project is built with:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
+## How can I deploy this project?
 
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
+Simply open [Lovable](https://lovable.dev/projects/686ecb5e-c197-41bf-99ae-9f8b3c9e7095) and click on Share -> Publish.
 
-### Build for Production
+## Can I connect a custom domain to my Lovable project?
 
-```bash
-npm run build
-```
+Yes, you can!
 
-## 🔐 Demo Credentials
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-For testing purposes, you can use these mock credentials:
-
-### Admin User
-- **Email:** admin@lms.com
-- **Password:** password123
-
-### Regular User
-- **Email:** user@lms.com
-- **Password:** password123
-
-## 📱 Pages & Routes
-
-### Public Routes
-- `/login` - User login page
-- `/signup` - User registration page
-- `/forgot-password` - Password reset page
-
-### Protected Routes
-- `/dashboard` - Main dashboard (requires authentication)
-- `/` - Redirects to login page
-
-## 🎨 Design Features
-
-- **Gradient Backgrounds** - Beautiful purple-blue gradients
-- **Card-based Layout** - Clean, organized content presentation
-- **Smooth Animations** - Hover effects and transitions
-- **Modern Typography** - Inter font family for readability
-- **Responsive Grid** - Adaptive layout for different screen sizes
-- **Interactive Elements** - Hover states and focus indicators
-
-## 🔧 Customization
-
-### Styling
-The application uses custom CSS with CSS variables for easy theming. Main styles are in `src/styles/index.css`.
-
-### Mock Data
-Mock data and services can be found in `src/services/mockData.js`. Replace these with actual API calls when connecting to a backend.
-
-### Authentication
-The authentication logic is centralized in `src/contexts/AuthContext.jsx` and can be easily modified or extended.
-
-## 🧪 Testing Features
-
-- **OTP Verification** - 6-digit code input with auto-focus
-- **Form Validation** - Real-time validation with error messages
-- **Loading States** - Visual feedback during API calls
-- **Error Handling** - Comprehensive error messages and recovery
-- **Responsive Design** - Test on different screen sizes
-
-## 🔒 Security Features
-
-- **Protected Routes** - Authentication required for dashboard access
-- **Form Validation** - Client-side and server-side validation
-- **Secure Authentication** - Mock implementation ready for real auth
-- **Session Management** - Local storage for user persistence
-
-## 🚀 Future Enhancements
-
-- **Real Backend Integration** - Replace mock services with actual APIs
-- **Real-time Features** - WebSocket integration for live updates
-- **Advanced Analytics** - User progress tracking and reporting
-- **File Upload** - Profile picture and document management
-- **Multi-language Support** - Internationalization (i18n)
-- **Dark Mode** - Theme switching capability
-- **PWA Features** - Offline support and app-like experience
-
-## 📝 Development Notes
-
-### Mock Services
-All authentication services are currently mocked for development purposes. When integrating with a real backend:
-
-1. Replace `mockAuthService` calls in `AuthContext.jsx`
-2. Update API endpoints in service files
-3. Implement real OTP sending (email/SMS)
-4. Add proper error handling for network issues
-
-### State Management
-The application uses React Context for global state management. For larger applications, consider using:
-- Redux Toolkit
-- Zustand
-- React Query for server state
-
-### Performance
-- Components are optimized with React.memo where appropriate
-- Lazy loading can be implemented for route-based code splitting
-- Image optimization for avatars and media content
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Check the documentation
-- Review the code examples
-
----
-
-**Built with ❤️ using React and modern web technologies**
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

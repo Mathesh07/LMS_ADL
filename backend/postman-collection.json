@@ -1,0 +1,412 @@
+{
+  "info": {
+    "name": "LMS API Collection",
+    "description": "Complete API collection for the Learning Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"testuser\",\n  \"user_email\": \"test@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"confirm_password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_email\": \"test@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_email\": \"test@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Create Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"JavaScript Fundamentals\",\n  \"content\": \"Variables, functions, and scope concepts\",\n  \"noteType\": \"text\",\n  \"tags\": [\n    \"javascript\",\n    \"programming\",\n    \"fundamentals\"\n  ],\n  \"relatedModuleId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notes"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Note",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notes",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Advanced JavaScript Concepts\",\n  \"content\": \"Closures, prototypes, and async programming\",\n  \"tags\": [\n    \"javascript\",\n    \"advanced\",\n    \"async\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/notes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notes",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Notes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notes/user/1?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notes",
+                "user",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "item": [
+        {
+          "name": "Create Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"JavaScript Study Group\",\n  \"description\": \"Weekly study sessions for JavaScript fundamentals\",\n  \"isPrivate\": false,\n  \"maxMembers\": 20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Join Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"joinCode\": \"ABC123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/1/join",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "1",
+                "join"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Group Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/1/members?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "1",
+                "members"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Friends",
+      "item": [
+        {
+          "name": "Send Friend Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiverId\": 123,\n  \"message\": \"Hi! I'd like to connect and study together.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/friends/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "friends",
+                "request"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Friend Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/friends/request/1/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "friends",
+                "request",
+                "1",
+                "accept"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Friends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/friends?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "friends"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Friend Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/friends/requests?page=1&limit=10&type=received",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "friends",
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "type",
+                  "value": "received"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

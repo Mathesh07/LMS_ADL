@@ -1,0 +1,2595 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LMS Authentication API",
+    "version": "1.0.0",
+    "description": "Learning Management System Authentication API with comprehensive user management features",
+    "contact": {
+      "name": "API Support",
+      "email": "support@lms.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_id"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email"
+          },
+          "isVerified": {
+            "type": "boolean",
+            "description": "Email verification status"
+          }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Request success status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          }
+        }
+      },
+      "AuthResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "user_name",
+          "user_email",
+          "password"
+        ],
+        "properties": {
+          "user_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "description": "User name (2-50 characters)"
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Valid email address"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "description": "Password (min 8 chars, must contain lowercase, uppercase, and number)"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "user_email",
+          "password"
+        ],
+        "properties": {
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password"
+          }
+        }
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "required": [
+          "user_email",
+          "otp_code"
+        ],
+        "properties": {
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address"
+          },
+          "otp_code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "description": "6-digit OTP code"
+          }
+        }
+      },
+      "ResendOTPRequest": {
+        "type": "object",
+        "required": [
+          "user_email"
+        ],
+        "properties": {
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address"
+          }
+        }
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "required": [
+          "user_email"
+        ],
+        "properties": {
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "User email address"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset token"
+          },
+          "new_password": {
+            "type": "string",
+            "minLength": 8,
+            "description": "New password (min 8 chars, must contain lowercase, uppercase, and number)"
+          }
+        }
+      },
+      "OAuthCallbackRequest": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Authorization code from OAuth provider"
+          },
+          "state": {
+            "type": "string",
+            "description": "State parameter for CSRF protection"
+          }
+        }
+      },
+      "OAuthResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "authUrl": {
+                "type": "string",
+                "description": "OAuth authorization URL"
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "google",
+                  "github",
+                  "facebook"
+                ],
+                "description": "OAuth provider"
+              },
+              "state": {
+                "type": "string",
+                "description": "State parameter for CSRF protection"
+              }
+            }
+          }
+        ]
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "noteId": {
+            "type": "integer",
+            "description": "Note ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Note title"
+          },
+          "content": {
+            "type": "string",
+            "description": "Note content"
+          },
+          "noteType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "document",
+              "link",
+              "multimedia"
+            ],
+            "description": "Type of note"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Note tags"
+          },
+          "userId": {
+            "type": "integer",
+            "description": "Owner user ID"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "CreateNoteRequest": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Note title"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 10000,
+            "description": "Note content"
+          },
+          "noteType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "document",
+              "link",
+              "multimedia"
+            ],
+            "default": "text",
+            "description": "Type of note"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Note tags"
+          },
+          "relatedModuleId": {
+            "type": "integer",
+            "description": "Related learning module ID"
+          }
+        }
+      },
+      "UpdateNoteRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Note title"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 10000,
+            "description": "Note content"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Note tags"
+          },
+          "relatedModuleId": {
+            "type": "integer",
+            "description": "Related learning module ID"
+          }
+        }
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "integer",
+            "description": "Group ID"
+          },
+          "groupName": {
+            "type": "string",
+            "description": "Group name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Group description"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private",
+              "restricted"
+            ],
+            "description": "Group visibility"
+          },
+          "createdBy": {
+            "type": "integer",
+            "description": "Creator user ID"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          }
+        }
+      },
+      "CreateGroupRequest": {
+        "type": "object",
+        "required": [
+          "groupName"
+        ],
+        "properties": {
+          "groupName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Group name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Group description"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private",
+              "restricted"
+            ],
+            "default": "public",
+            "description": "Group visibility"
+          }
+        }
+      },
+      "FriendRequest": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "integer",
+            "description": "Friend request ID"
+          },
+          "senderId": {
+            "type": "integer",
+            "description": "Sender user ID"
+          },
+          "receiverId": {
+            "type": "integer",
+            "description": "Receiver user ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "rejected",
+              "blocked"
+            ],
+            "description": "Request status"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Request sent timestamp"
+          }
+        }
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {}
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              },
+              "totalPages": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "user_name": "John Doe",
+                "user_email": "john@example.com",
+                "password": "Password123",
+                "confirmPassword": "Password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "integer",
+                          "description": "Created user ID"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "message": "User successfully created. Please check your email for verification code.",
+                  "userId": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error or user already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "User already exists"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "userEmail": "john@example.com",
+                "userPassword": "Password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Session cookie",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Login successful",
+                  "user": {
+                    "id": 123,
+                    "name": "John Doe",
+                    "email": "john@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials or email not verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "invalid_credentials": {
+                    "summary": "Invalid credentials",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid credentials"
+                    }
+                  },
+                  "not_verified": {
+                    "summary": "Email not verified",
+                    "value": {
+                      "success": false,
+                      "message": "Please verify your email first"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/resend-otp": {
+      "post": {
+        "summary": "Resend OTP verification code",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendOTPRequest"
+              },
+              "example": {
+                "userEmail": "john@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New verification code sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "New verification code sent to your email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email already verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "summary": "Verify email with OTP code",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              },
+              "example": {
+                "userEmail": "john@example.com",
+                "otp": "123456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Email verified successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "invalid_otp": {
+                    "summary": "Invalid OTP",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid OTP code"
+                    }
+                  },
+                  "expired_otp": {
+                    "summary": "Expired OTP",
+                    "value": {
+                      "success": false,
+                      "message": "OTP code has expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Request password reset",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              },
+              "example": {
+                "userEmail": "john@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent (if email exists)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "If the email exists, a password reset link has been sent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset password with token",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              },
+              "example": {
+                "token": "reset_token_here",
+                "newPassword": "NewPassword123",
+                "confirmPassword": "NewPassword123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Password reset successful"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired reset token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid or expired reset token"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout user",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Logout successful"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "summary": "Get user profile",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "user": {
+                    "id": 123,
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "isVerified": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/oauth/{provider}": {
+      "post": {
+        "summary": "Initialize OAuth authentication",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "google",
+                "github",
+                "facebook"
+              ]
+            },
+            "description": "OAuth provider name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OAuth initialization successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "OAuth initialization successful for google",
+                  "authUrl": "https://accounts.google.com/oauth/authorize?...",
+                  "provider": "google",
+                  "state": "random_state_string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid OAuth provider",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Invalid OAuth provider: invalid. Supported providers: google, github, facebook"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/auth/oauth/{provider}/callback": {
+      "post": {
+        "summary": "Handle OAuth callback",
+        "tags": [
+          "Authentication"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "google",
+                "github",
+                "facebook"
+              ]
+            },
+            "description": "OAuth provider name"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthCallbackRequest"
+              },
+              "example": {
+                "code": "authorization_code_from_provider",
+                "state": "random_state_string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OAuth login successful",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Session cookie",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "OAuth login successful with google",
+                  "user": {
+                    "id": 123,
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "isVerified": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid provider or state parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "examples": {
+                  "invalid_provider": {
+                    "summary": "Invalid provider",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid OAuth provider: invalid"
+                    }
+                  },
+                  "invalid_state": {
+                    "summary": "Invalid state",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid state parameter"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/notes/{noteId}/comments": {
+      "post": {
+        "summary": "Add a comment to a note",
+        "tags": [
+          "Comments"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "noteId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID to comment on"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentRequest"
+              },
+              "example": {
+                "commentText": "Great explanation! This really helped me understand the concept."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "comment": {
+                          "$ref": "#/components/schemas/Comment"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Cannot comment on private note"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get comments for a note",
+        "tags": [
+          "Comments"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "noteId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "description": "Number of comments per page"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest"
+              ],
+              "default": "newest"
+            },
+            "description": "Sort order for comments"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Comment"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Cannot view comments on private note"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "put": {
+        "summary": "Update a comment",
+        "tags": [
+          "Comments"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Comment ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentRequest"
+              },
+              "example": {
+                "commentText": "Updated comment with more detailed feedback."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "comment": {
+                          "$ref": "#/components/schemas/Comment"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Can only update your own comments"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a comment",
+        "tags": [
+          "Comments"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Comment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Can only delete your own comments"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      }
+    },
+    "/friends/request": {
+      "post": {
+        "summary": "Send a friend request to another user",
+        "tags": [
+          "Friends"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendFriendRequestRequest"
+              },
+              "example": {
+                "receiverId": 123,
+                "message": "Hi! I'd like to connect and study together."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Friend request sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or already friends/blocked"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Friend request already exists"
+          }
+        }
+      }
+    },
+    "/friends/request/{id}/accept": {
+      "post": {
+        "summary": "Accept a friend request",
+        "tags": [
+          "Friends"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Friend request ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend request accepted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to accept this request"
+          },
+          "404": {
+            "description": "Friend request not found"
+          }
+        }
+      }
+    },
+    "/friends/request/{id}/reject": {
+      "post": {
+        "summary": "Reject a friend request",
+        "tags": [
+          "Friends"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Friend request ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend request rejected successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to reject this request"
+          },
+          "404": {
+            "description": "Friend request not found"
+          }
+        }
+      }
+    },
+    "/friends": {
+      "get": {
+        "summary": "Get user's friends list with pagination",
+        "tags": [
+          "Friends"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of friends per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search friends by name or email"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "online",
+                "offline",
+                "all"
+              ],
+              "default": "all"
+            },
+            "description": "Filter by online status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friends list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Friend"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/friends/requests": {
+      "get": {
+        "summary": "Get pending friend requests (sent and received)",
+        "tags": [
+          "Friends"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of requests per page"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sent",
+                "received",
+                "all"
+              ],
+              "default": "all"
+            },
+            "description": "Filter by request type"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "accepted",
+                "rejected"
+              ],
+              "default": "pending"
+            },
+            "description": "Filter by request status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend requests retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FriendRequest"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/groups": {
+      "post": {
+        "summary": "Create a new study group",
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGroupRequest"
+              },
+              "example": {
+                "name": "JavaScript Study Group",
+                "description": "Weekly study sessions for JavaScript fundamentals",
+                "isPrivate": false,
+                "maxMembers": 20
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "group": {
+                          "$ref": "#/components/schemas/Group"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/groups/{id}/join": {
+      "post": {
+        "summary": "Join a study group",
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Group ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "joinCode": {
+                    "type": "string",
+                    "description": "Join code for private groups"
+                  }
+                }
+              },
+              "example": {
+                "joinCode": "ABC123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully joined the group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid join code or group is full"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Group not found"
+          },
+          "409": {
+            "description": "Already a member of this group"
+          }
+        }
+      }
+    },
+    "/groups/{id}/leave": {
+      "post": {
+        "summary": "Leave a study group",
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Group ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully left the group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Group owner cannot leave (must transfer ownership first)"
+          },
+          "404": {
+            "description": "Group not found or not a member"
+          }
+        }
+      }
+    },
+    "/groups/{id}/members": {
+      "get": {
+        "summary": "Get group members with pagination",
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Group ID"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of members per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group members retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/GroupMember"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not a member of this group"
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        }
+      }
+    },
+    "/groups/{id}/notes": {
+      "get": {
+        "summary": "Get notes shared with the group",
+        "tags": [
+          "Groups"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Group ID"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of notes per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for note title/content"
+          },
+          {
+            "in": "query",
+            "name": "noteType",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "text",
+                "document",
+                "link",
+                "multimedia"
+              ]
+            },
+            "description": "Filter by note type"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group notes retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Note"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not a member of this group"
+          },
+          "404": {
+            "description": "Group not found"
+          }
+        }
+      }
+    },
+    "/notes": {
+      "post": {
+        "summary": "Create a new note",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNoteRequest"
+              },
+              "example": {
+                "title": "JavaScript Fundamentals",
+                "content": "Variables, functions, and scope concepts",
+                "noteType": "text",
+                "tags": [
+                  "javascript",
+                  "programming",
+                  "fundamentals"
+                ],
+                "relatedModuleId": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Note created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "note": {
+                          "$ref": "#/components/schemas/Note"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/notes/{id}": {
+      "get": {
+        "summary": "Get a specific note",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "note": {
+                          "$ref": "#/components/schemas/Note"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a note",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNoteRequest"
+              },
+              "example": {
+                "title": "Advanced JavaScript Concepts",
+                "content": "Closures, prototypes, and async programming",
+                "tags": [
+                  "javascript",
+                  "advanced",
+                  "async"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Note updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "note": {
+                          "$ref": "#/components/schemas/Note"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to update this note"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a note",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to delete this note"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    },
+    "/notes/user/{userId}": {
+      "get": {
+        "summary": "Get user's notes with pagination and filtering",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "User ID"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of notes per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for title/content"
+          },
+          {
+            "in": "query",
+            "name": "noteType",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "text",
+                "document",
+                "link",
+                "multimedia"
+              ]
+            },
+            "description": "Filter by note type"
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated tags to filter by"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notes retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Note"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to view these notes"
+          }
+        }
+      }
+    },
+    "/notes/{id}/share/{groupId}": {
+      "post": {
+        "summary": "Share a note with a study group",
+        "tags": [
+          "Notes"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Note ID"
+          },
+          {
+            "in": "path",
+            "name": "groupId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Group ID to share with"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note shared successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Not authorized to share this note or access this group"
+          },
+          "404": {
+            "description": "Note or group not found"
+          }
+        }
+      }
+    },
+    "/notes/public": {
+      "get": {
+        "summary": "Get public notes",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "noteType",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "text",
+                "image",
+                "audio",
+                "video",
+                "pdf"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest",
+                "popular"
+              ],
+              "default": "newest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public notes retrieved successfully"
+          }
+        }
+      }
+    },
+    "/notes/{noteId}/visibility": {
+      "patch": {
+        "summary": "Update note visibility",
+        "tags": [
+          "Notes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "noteId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "visibilityScope"
+                ],
+                "properties": {
+                  "visibilityScope": {
+                    "type": "string",
+                    "enum": [
+                      "private",
+                      "group",
+                      "public"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Note visibility updated successfully"
+          },
+          "403": {
+            "description": "Not authorized to update this note"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and account management endpoints"
+    },
+    {
+      "name": "Comments",
+      "description": "Note comment management endpoints"
+    },
+    {
+      "name": "Friends",
+      "description": "Friend management and social networking endpoints"
+    },
+    {
+      "name": "Groups",
+      "description": "Study group management endpoints"
+    },
+    {
+      "name": "Notes",
+      "description": "Study notes management endpoints"
+    }
+  ]
+}

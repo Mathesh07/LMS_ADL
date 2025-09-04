@@ -1,9 +1,12 @@
 import 'dotenv/config'
 import app from "./app";
+import { startOtpCleanupCron } from './services/cronService'
 
-const PORT:string | number = process.env.PORT! || 7000
+const PORT = process.env.PORT || 8000
 
-app.listen(PORT , () => {
-    console.log(`Server is running http://localhost:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server is running http://localhost:${PORT}`)
+    
+    // Start OTP cleanup cron job
+    startOtpCleanupCron()
 })
-

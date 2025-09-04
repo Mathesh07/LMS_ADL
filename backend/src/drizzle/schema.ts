@@ -44,11 +44,14 @@ export const users = pgTable("users", {
 	userId: serial("user_id").primaryKey().notNull(),
 	userName: varchar("user_name", {length: 255}).notNull(),
 	userEmail: varchar("user_email", { length: 255 }).notNull(),
-	password: varchar({ length: 255 }).notNull(),
-	salt: varchar({ length: 255 }).notNull(),
+	password: varchar({ length: 255 }),
+	salt: varchar({ length: 255 }),
 	avatarUrl: text("avatar_url"),
 	avatarPublicUrl: text("avatar_public_url"),
 	isVerified: boolean("is_verified").default(false),
+	oauthProvider: varchar("oauth_provider", { length: 50 }),
+	oauthId: varchar("oauth_id", { length: 255 }),
+	profilePicture: text("profile_picture"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
@@ -82,6 +85,21 @@ export const userEmailVerification = pgTable("user_email_verification", {
 			columns: [table.userId],
 			foreignColumns: [users.userId],
 			name: "user_email_verification_user_id_fkey"
+		}).onDelete("cascade"),
+]);
+
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+	tokenId: serial("token_id").primaryKey().notNull(),
+	userId: integer("user_id").notNull(),
+	token: varchar({ length: 255 }).notNull(),
+	expiresAt: timestamp("expires_at", { mode: 'string' }).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	isUsed: boolean("is_used").default(false),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [users.userId],
+			name: "password_reset_tokens_user_id_fkey"
 		}).onDelete("cascade"),
 ]);
 

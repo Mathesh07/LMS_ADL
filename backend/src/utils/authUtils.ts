@@ -35,6 +35,7 @@ export async function comparePasswords({password,salt,hashedPassword,}:
 export function generateSalt() {
   return crypto.randomBytes(16).toString("hex").normalize()
 }
+
 export function generateSessionId() {
     return crypto.randomBytes(512).toString("hex").normalize()
 }
@@ -46,8 +47,32 @@ export async function createSession(sessionId: string, userId: number) {
     `session:${sessionId}`,
     JSON.stringify(session),
     "EX",
-    process.env.SESSION_EXPIRATION_SECONDS!
+    parseInt(process.env.SESSION_EXPIRATION_SECONDS || "604800", 10) // 7 days default
   )
 
   return session
+}
+
+export async function getSession(sessionId: string): Promise<UserSession | null> {
+  try {
+    const sessionData = await client.get(`session:${sessionId}`)
+    if (!sessionData) return null
+    
+    const parsed = JSON.parse(sessionData)
+    return sessionSchema.parse(parsed)
+  } catch (error) {
+    return null
+  }
+}
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  await client.del(`session:${sessionId}`)
+}
+
+export function generatePasswordResetToken(): string {
+  return crypto.randomBytes(32).toString('hex')
+}
+
+export function generateOTP(): string {
+  return crypto.randomInt(100000, 999999).toString()
 }
